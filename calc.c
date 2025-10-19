@@ -1,5 +1,5 @@
 // Mustafa Akhan 221ADB228
-// https://github.com/mustafaaakhn/c-final-project/tree/main
+// https://github.com/mustafaaakhn/c-final-project
 // Compilation: gcc -O2 -Wall -std=c17 -o calc calc.c
 
 #include <stdio.h>
@@ -30,7 +30,7 @@ typedef enum {
 // Each token stores type, position for error reporting, and value for numbers
 typedef struct {
     TokenType type;
-    long long pos;    // 1-based character position
+    long long pos;    // 1 based character position
     long long value;
 } Token;
 

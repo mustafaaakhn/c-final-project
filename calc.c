@@ -1,6 +1,6 @@
 // Mustafa Akhan 221ADB228
+// https://github.com/mustafaaakhn/c-final-project/tree/main
 // Compilation: gcc -O2 -Wall -std=c17 -o calc calc.c
-// I used AI help for some specific parts, documented below in comments
 
 #include <stdio.h>
 #include <stdlib.h>

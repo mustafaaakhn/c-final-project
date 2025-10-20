@@ -1,17 +1,27 @@
 // Mustafa Akhan 221ADB228
 // https://github.com/mustafaaakhn/c-final-project
-// Compilation: gcc -O2 -Wall -std=c17 -o calc calc.c
+// Compilation: gcc -O2 -Wall -std=c11 -o calc calc.c
+// Compilation: .\calc input.txt
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <limits.h>
 
-// Maximum buffer size, assignment says Grade 7 needs 10k characters
+
+// I asked AI help. Prompt: How to make it work c code in windows that made in macos
+#ifdef _WIN32
+#include <direct.h>
+#define mkdir(path, mode) _mkdir(path)
+#else
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
+
+
+// Maximum buffer size. assignment says Grade 7 needs 10k characters
 #define MAX_BUFFER_SIZE 10001 
 
 // Token types to represent different parts of expression
@@ -27,7 +37,7 @@ typedef enum {
     TOKEN_INVALID
 } TokenType;
 
-// Each token stores type, position for error reporting, and value for numbers
+// Each token stores type anf position for error reporting, and value for numbers
 typedef struct {
     TokenType type;
     long long pos;    // 1 based character position
@@ -55,8 +65,8 @@ void fail(long long pos) {
     }
 }
 
-// Creates output directory, handles case when it already exist
-// I asked AI help. Prompt: how create directory C that not fail if already exists
+// Creates output directory and handles case when it already exist
+// I asked AI help. Prompt: how create directory in c that no fail if already exists
 static int safe_mkdir(const char* path) {
     if (mkdir(path, 0775) == 0) {
         return 0;
@@ -71,7 +81,7 @@ static int safe_mkdir(const char* path) {
 }
 
 // Gets base filename without extension for output naming
-// I asked AI help. Prompt: C function get filename without extension
+// I asked AI help. Prompt: how to get in c function get filename without extension
 static void get_basename_no_ext(const char* path, char* buffer, size_t size) {
     const char* last_slash = strrchr(path, '/');
     const char* last_backslash = strrchr(path, '\\');
@@ -120,10 +130,9 @@ static int read_file_to_buffer(const char* filepath) {
     return 0;
 }
 
-// Tokenizer, breaks input into tokens like numbers, operators etc
-// I looked at K&R book chapter 5 for tokenizer ideas
+// Tokenizer breaks input into tokens like numbers and operators etc.
 static Token get_next_token() {
-    // Skip whitespace and newlines
+    // Skip space and newlines
     while (g_pos < g_buffer_len) {
         char c = g_buffer[g_pos];
         if (isspace(c)) {
@@ -174,12 +183,12 @@ static Token get_next_token() {
         return (Token){TOKEN_RPAREN, token_start_pos, 0}; 
     }
 
-    // Number parsing, handle negative numbers too
+    // Number parsing and handle negative numbers too
     if (isdigit(c) || (c == '-' && g_pos + 1 < g_buffer_len && isdigit(g_buffer[g_pos + 1]))) {
         const char* startptr = g_buffer + g_pos;
         char* endptr = NULL;
         
-        // I asked AI help. Prompt: how use strtoll with overflow check C
+        // I asked AI help. Prompt: how use strtoll with overflow check in c
         errno = 0;
         long long val = strtoll(startptr, &endptr, 10);
         
@@ -194,7 +203,7 @@ static Token get_next_token() {
         return (Token){TOKEN_NUMBER, token_start_pos, val};
     }
 
-    // Invalid character, advance position to avoid infinite loop
+    // Invalid character and advance position to avoid infinite loop
     g_pos++; 
     g_char_index++;
     return (Token){TOKEN_INVALID, token_start_pos, 0};
@@ -213,10 +222,10 @@ static Result parse_term();
 static Result parse_primary();
 
 // Macro to check errors and return early if error occured
-// I asked AI help. Prompt: C macro for checking error in parser
+// I asked AI help. Prompt: c macro for checking error in parser
 #define CHECK_ERROR() do { if (g_error_pos != 0) return (Result){0, 0}; } while(0)
 
-// Parses primary expressions - numbers and parenthesized expressions
+// Parses primary expressions numbers and parenthesized expressions
 // Also handles unary minus and plus
 static Result parse_primary() {
     CHECK_ERROR();
@@ -237,7 +246,7 @@ static Result parse_primary() {
 
     // Parenthesized expression
     if (t.type == TOKEN_LPAREN) {
-        // I asked AI help. Prompt: how implement parentheses recursive descent parser C
+        // I asked AI help. Prompt: how is implement parentheses recursive descent parser in c
         long long paren_pos = t.pos;
         consume_token();
         Result expr = parse_expr();
@@ -270,8 +279,8 @@ static Result parse_primary() {
     return (Result){0, 0};
 }
 
-// Parses term - handles multiplication and division, higher precedence
-// I asked AI help. Prompt: recursive descent parser multiplication division C
+// Parses term handles multiplication and division and higher precedence
+// I asked AI help. Prompt: recursive descent parser multiplication division in c
 static Result parse_term() {
     CHECK_ERROR();
     Result left = parse_primary();
@@ -298,8 +307,8 @@ static Result parse_term() {
     return left;
 }
 
-// Parses expression - handles addition and subtraction, lowest precedence
-// I asked AI help. Prompt: recursive descent parser addition subtraction C
+// Parses expression: handles addition and subtraction, lowest precedence
+// I asked AI help. Prompt: recursive descent parser addition subtraction in c
 static Result parse_expr() {
     CHECK_ERROR();
     Result left = parse_term();

@@ -1,7 +1,8 @@
 // Mustafa Akhan 221ADB228
 // https://github.com/mustafaaakhn/c-final-project
 // Compilation: gcc -O2 -Wall -std=c11 -o calc calc.c
-// Compilation: .\calc input.txt
+// Compilation: If windows : .\calc input.txt
+// Compilation: If mac : ./calc input.txt
 
 #include <stdio.h>
 #include <stdlib.h>
